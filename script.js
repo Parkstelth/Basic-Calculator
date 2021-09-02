@@ -9,26 +9,23 @@ const calculatedResult = document.querySelector('.calculator__result'); // calcu
 
 function calculate(n1, operator, n2) {
   let result = 0;
-// 1. 더하기
-// 2. 빼기(결과 음수일시 음수반환)
-// 3. 나누기
-// 4. 곱하기
-  if(operator ==='+'){
+  // 1. 더하기
+  // 2. 빼기(결과 음수일시 음수반환)
+  // 3. 나누기
+  // 4. 곱하기
+  if (operator === '+') {
     result = parseFloat(n1) + parseFloat(n2)
-  }
-  else if(operator === '-'){
+  } else if (operator === '-') {
     result = parseFloat(n1) - parseFloat(n2)
-  }
-  else if(operator === '/'){
+  } else if (operator === '/') {
     result = parseFloat(n1) / parseFloat(n2)
-  }
-  else if(operator === '*'){
+  } else if (operator === '*') {
     result = parseFloat(n1) * parseFloat(n2)
   }
   return String(result)
-  
+
 }
-let numberValue = false 
+let numberValue = false
 //false일시 첫번째칸에 true일시 두번째칸에 입력하게 해주는 조건 변수
 
 buttons.addEventListener('click', function (event) {
@@ -86,8 +83,8 @@ buttons.addEventListener('click', function (event) {
       let n1 = firstOperend.textContent
       let n2 = secondOperend.textContent
       let oper = operator.textContent
-      calculatedResult.textContent = calculate(n1,oper,n2)
-      
+      calculatedResult.textContent = calculate(n1, oper, n2)
+
     }
   }
 });
@@ -97,8 +94,8 @@ buttons.addEventListener('click', function (event) {
 // ! Advanced Challenge test와 Nightmare test를 위해서는 아래 주석을 해제하세요.
 
 const display = document.querySelector('.calculator__display--for-advanced'); // calculator__display 엘리먼트와, 그 자식 엘리먼트의 정보를 모두 담고 있습니다.
-let firstNum, operatorForAdvanced=null, previousKey, previousNum;
- //현재 소수점이 있는지 여부
+let firstNum, operatorForAdvanced, previousKey, previousNum;
+
 buttons.addEventListener('click', function (event) {
   // 버튼을 눌렀을 때 작동하는 함수입니다.
 
@@ -108,76 +105,62 @@ buttons.addEventListener('click', function (event) {
   // ! 위 코드는 수정하지 마세요.
 
   // ! 여기서부터 Advanced Challenge & Nightmare 과제룰 풀어주세요.
-  
+
   if (target.matches('button')) {
-    if (action === 'number') { //입력버튼이 숫자버튼일시 적용
-      if((display.textContent)=== '0' || previousKey ==='operator'){ //화면에 0 또는 이전에 누른 버튼키가 연산키라면
-        display.textContent= buttonContent //누른 숫자버튼의 숫자를 화면에 출력한다.
-        previousKey ='number' // 제일 최근키가 number로 변환
-        
+    if (action === 'number') {
+      if (display.textContent === '0' || previousKey === 'operator') { //조건 1: 새로운 숫자를 받기위해 화면에 0 또는 이전에 연산자를 눌렀으면,
+        display.textContent = buttonContent //화면에 버튼의 숫자하나를 받는다.
+      } else {
+        display.textContent += buttonContent //조건 2: 반대로 그외에는 기존 숫자에 버튼의 숫자를 하나하나 붙인다.
       }
-      
-      else{
-        display.textContent+= buttonContent // 그밖에 숫자버튼의 숫자는 현재 화면에 이어붙인다.
-        
-      }
+      previousKey = 'number' //현재 키를 number로 전환한다.
     }
-    if (action === 'operator') { 1+2+3 
-      if(previousKey==='operator' || previousKey ==='calculate'){ //연산자를 연속으로 누를시 마지막 연산자기억
-        operatorForAdvanced = buttonContent //마지막 연산자버튼의 연산자를 입력
+
+    if (action === 'operator') {
+      if (previousKey === 'operator' || previousKey === 'calculate') { //조건 1: 현재키가 operator이거나 calculate일 경우, 연속적으로 눌러도 이상이없도록
+        operatorForAdvanced = buttonContent // 현재 연산자에 마지막 버튼의 연산자를 할당한다.
         return
       }
-      if(operatorForAdvanced === null){ //연산자 한번도 안눌렀을시
-        firstNum = Number(display.textContent) //firstNum에 화면값 입력
-      }
-      else{ //1+2+3 등의 연산
-        firstNum = calculate(firstNum,operatorForAdvanced,display.textContent) //현재까지의 연산을 계산하고 결과를 피연산자1에 저장해둔다.
-        display.textContent=firstNum //피연산자1을 화면에 보여준다.
+      if (operatorForAdvanced === undefined) { //조건 1: operatorForAdvanced에 한번더 연산자가 할당된적 없다면
+        firstNum = Number(display.textContent) //현재 화면의 숫자를 firstNum에 할당한다.
+      } else { //조건2: 그외에 operatorForAdvance에 이미 연산자가 할당 되어있었으면 
+        firstNum = calculate(firstNum, operatorForAdvanced, display.textContent) // firstNum과 현재 새로 받은 숫자를 연산하여 firstNum에 교체한다.
+        display.textContent = firstNum //금방 연산된 firstNum을 화면에 출력한다.
       }
       target.setAttribute('style','background-color:#00da75') //백그라운드 컬러를 변경한다.
-      previousKey = 'operator' 
-      operatorForAdvanced = buttonContent
+      operatorForAdvanced = buttonContent //조건문이 끝나면 operatorForAdvanced에 누른 버튼의 연산자를 넣는다.
+      previousKey = 'operator' //현재 키를 operator로 전환한다.
     }
 
-    if (action === 'decimal') { 
-      // display.textContent +=buttonContent 
-      if(display.textContent.indexOf('.')>(-1))  return; //소수점이 있으면 무시
-      if(previousKey==='calculate') return;
-      if(display.textContent==='0' || previousKey==='operator') { //화면에 0또는 이전에 누른키가 연산키나 enter일시 0.을 출력
-        display.textContent = "0.";
+    if (action === 'decimal') {
+      if (display.textContent.indexOf('.') > (-1)) return //조건1: 화면에 있는 숫자에 .이 있을시 return되어 종료된다.
+      if (display.textContent === '0' || previousKey === 'operator' || previousKey === 'calculate') {//조건2: 화면에 0이거나 현재키가 operator이나 calculate일시
+        display.textContent = '0.' // 화면에 0.을 출력하여 뒤에 숫자앞을 대처한다.
       } else {
-        display.textContent += buttonContent; //0이 아니거나 숫자이면 .을 붙임
+        display.textContent += buttonContent //조건3: 그외에는 버튼의 콘텐츠인 . 을 붙인다.
       }
-      previousKey = 'decimal'
+      previousKey = 'decimal' //현재 키를 decimal로 전환한다.
     }
-
-    if (action === 'clear') { //화면부터 변수들을 모두 초기화
-      firstNum = 0;
-      operatorForAdvanced=null
-      previousKey='clear'
-      display.textContent ='0'
+    if (action === 'clear') { //초기화
+      display.textContent = '0',
+      firstNum = 0,
+      operatorForAdvanced = undefined
+      previousKey = undefined
       const buttonOperators = document.querySelectorAll('.operator') //색이 변경된 operator 버튼의 색을 원색으로 돌린다.
       buttonOperators.forEach(buttonOperator=>buttonOperator.setAttribute('style','background-color:#313132'))
-     
-
     }
-    if (action === 'calculate') {
-      if(operatorForAdvanced===null) return  //만약에 operator을 입력한적없다면 return한다. 받아올때까지
-      if(previousKey==='calculate'){ //연속입력시, 이전에 previousKey가 calculate일시
-        display.textContent = calculate(display.textContent,operatorForAdvanced,previousNum) 
-        //
-      }
-      else{
-        previousNum = display.textContent 
-        display.textContent = calculate(firstNum,operatorForAdvanced,previousNum) // 화면의 값과 operator에서 계산된 firstNum을 연산하여 화면에 출력.
-      }
 
-     
-      previousKey = 'calculate'
-
+    if (action === 'calculate') { //enter부분
+      if (operatorForAdvanced === undefined) return //연산자변수에 아무것도없을시 return하여 종료된다.
+      if (previousKey === 'calculate') { //enter로 계산을 한뒤 또 다시 enter을 누를시 현재 키가 calculate로 되어
+        display.textContent = calculate(display.textContent, operatorForAdvanced, previousNum) //else에서 계산된 previousNum과 화면값이 계산되어 화면에 출력된다.
+      } else {
+        previousNum = display.textContent //그외에 화면의 값을 previousNum에 넣어
+        display.textContent = calculate(firstNum, operatorForAdvanced, previousNum) //operator에서 계산한 firstNum과 화면에 보이는 값을 계산하여 화면에 출력한다.
+      }
+      previousKey = 'calculate' //현재 키를 calculate로 전환한다.
       const buttonOperators = document.querySelectorAll('.operator') //색이 변경된 operator 버튼들의 색을 원색으로 돌린다.
       buttonOperators.forEach(buttonOperator=>buttonOperator.setAttribute('style','background-color:#313132'))
-
     }
   }
 
